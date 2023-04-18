@@ -1,4 +1,4 @@
-import { Observable} from "rxjs"
+import { Observable, Observer } from "rxjs"
 
 const observableAlfa$: Observable<number | string> = new Observable(subscriber => {
     subscriber.next("Estoy observando")
@@ -7,7 +7,7 @@ const observableAlfa$: Observable<number | string> = new Observable(subscriber =
     subscriber.next("Adios")
 })
 
-const observer = {
+const observer: Observer<number | string> = {
     next: (value: number | string ) => console.log(value),
     complete: () => {},
     error: (error: any) => console.log(error)
