@@ -6,7 +6,7 @@ const onKeyDown$ = fromEvent<KeyboardEvent>(document, "keydown")
 const userWin$ = new Subject()
 
 const allRows = document.querySelectorAll(".letter-row")
-const messageText = document.querySelector("#message-text")
+const messageText = document.querySelector("#message-text") as Element
 const randomWord = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)]
 
 console.log(randomWord)
@@ -59,12 +59,31 @@ const checkWord: Observer<KeyboardEvent> = {
         if(pressedKey === "Enter") {
             const userWord = userAnswer.join("").toUpperCase()
 
+            if(userWord.length < randomWord.length) {
+                const differentLength = randomWord.length - userWord.length
+                messageText.textContent = `Te faltan ${differentLength} letras`
+
+                return
+            }
+
+            const currentRow = Array.from(allRows)[letterRow]
+            const childrenRow = Array.from(currentRow.children)
+
+            childrenRow.forEach((letter, index) => {
+                const letterText = letter.textContent as string
+                if(letterText === randomWord[index]) {
+                    letter.classList.add("letter-green")
+                } else if (randomWord.includes(letterText)) {
+                    letter.classList.add("letter-yellow")
+                } else {
+                    letter.classList.add("letter-grey")
+                }
+            })
+
             if(userWord.length === randomWord.length) {
                 letterRow ++
                 letterCol = 0
                 userAnswer = []
-            } else {
-                messageText.textContent = "You have to fill all the letters"
             }
 
             if (userWord === randomWord) {
@@ -80,15 +99,9 @@ onKeyDown$.subscribe(insertLetter)
 onKeyDown$.subscribe(deleteLetter)
 onKeyDown$.subscribe(checkWord)
 userWin$.subscribe((result) => {
-    const currentRow = Array.from(allRows)[letterRow]
-    const childrenRow = Array.from(currentRow.children)
-
-    console.log(result)
-
     if(result === "win") {
-        childrenRow.forEach((letter) => {
-            letter.classList.add("letter-green")
-        })
+        messageText.textContent = "Ganaste!"
+
     }
 })
 
