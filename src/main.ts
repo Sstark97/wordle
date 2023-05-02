@@ -101,7 +101,6 @@ onKeyDown$.subscribe(checkWord)
 userWin$.subscribe((result) => {
     if(result === "win") {
         messageText.textContent = "Ganaste!"
-
     }
 })
 
