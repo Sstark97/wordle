@@ -1,27 +1,26 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter'
-import { observableAlfa$, observer } from './first-observable'
+import {fromEvent, map} from "rxjs"
+import "./style.css"
 
-observableAlfa$.subscribe(observer)
+const cursorPosition = { x: 0, y: 0 };
+const board = document.querySelector('#board') as HTMLCanvasElement;
+const boardContext = board.getContext('2d') as CanvasRenderingContext2D;
+boardContext.lineWidth = 8;
+boardContext.strokeStyle = "white";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+boardContext.beginPath();
+boardContext.moveTo(0, 0);
+boardContext.lineTo(200, 200);
+boardContext.stroke();
+boardContext.closePath();
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const onMouseDown$ = fromEvent<MouseEvent>(board, 'mousedown').pipe(
+    map((event) => {
+        cursorPosition.x = event.clientX - board.offsetLeft;
+        cursorPosition.y = event.clientY - board.offsetTop;
+        console.log(cursorPosition);
+    })
+);
+const onMouseMove$ = fromEvent<MouseEvent>(board, 'mousemove');
+const onMouseUp$ = fromEvent<MouseEvent>(board, 'mouseup');
+
+onMouseDown$.subscribe();
